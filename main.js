@@ -1,9 +1,10 @@
 var versions = {
   'vanilla': 'Box2D',
-  'kripken': 'Box2D_v2.3.1_min_kripken'
+  'kripken': 'Box2D_v2.3.1_min_kripken',
+  'native': 'box2d_cocoonJS'
 }
 
-var CURRENT_BOX2D_NAME = 'vanilla'; //Change between 'vanilla' and 'kripken' to test the different versions
+var CURRENT_BOX2D_NAME = 'vanilla'; //Change between 'vanilla', 'kripken' and 'native' to test the different versions
 var box2d_path = versions[CURRENT_BOX2D_NAME];
 
 requirejs([
@@ -19,10 +20,16 @@ requirejs([
 
   - Kripken Box2d, PC:        330
   - Kripken Box2d, Device:    5876
+
+  - Native Box2d, Device:     377
 */
 
 function program(_Box2D, _) {
   console.log('box2d', typeof window.Box2D, typeof window._);
+
+  function is_api_1() {
+    return (CURRENT_BOX2D_NAME === 'vanilla' || CURRENT_BOX2D_NAME === 'native');
+  }
 
   var canvas = document.getElementById('canvas');
   var context = canvas.getContext('2d');
@@ -37,7 +44,7 @@ function program(_Box2D, _) {
   var b2RevoluteJointDef;
   var b2EdgeShape;
 
-  if (CURRENT_BOX2D_NAME === 'vanilla') {
+  if (is_api_1()) {
     b2World = Box2D.Dynamics.b2World;
     b2Vec2 = Box2D.Common.Math.b2Vec2;
     b2BodyDef = Box2D.Dynamics.b2BodyDef;
@@ -63,13 +70,13 @@ function program(_Box2D, _) {
 
   var bodies = [];
 
-  var world = new b2World(new b2Vec2(0, 10));
+  var world = new b2World(new b2Vec2(0, 10), false);
 
   _.each(_.range(20), function(columns) {
     _.each(_.range(12), function(rows) {
       //Circle
       var circleDef = new b2BodyDef();
-      if (CURRENT_BOX2D_NAME === 'vanilla') {
+      if (is_api_1()) {
         circleDef.type = b2Body.b2_dynamicBody;
         circleDef.position.x = 6 + (columns * 0.3);
         circleDef.position.y = -2 + (rows * 1.1);
@@ -81,7 +88,7 @@ function program(_Box2D, _) {
 
       bodies.push(circleBody);
 
-      if (CURRENT_BOX2D_NAME === 'vanilla') {
+      if (is_api_1()) {
         var circleFixDef = new b2FixtureDef();
         circleFixDef.shape = new b2CircleShape(0.2);
         circleBody.CreateFixture(circleFixDef);
@@ -90,14 +97,13 @@ function program(_Box2D, _) {
         circleShape.set_m_radius( 0.2 );
         circleBody.CreateFixture(circleShape, 1.0);
       }
-      
     });
   });
 
-  //Floor
+  // //Floor
   var floorDef = new b2BodyDef();
   floorDef.type = b2Body.b2_staticBody;
-  if (CURRENT_BOX2D_NAME === 'vanilla') {
+  if (is_api_1()) {
     floorDef.position.x = 0;
     floorDef.position.y = 22;
   } else {
@@ -105,7 +111,7 @@ function program(_Box2D, _) {
   }
   var floorBody = world.CreateBody(floorDef);
 
-  if (CURRENT_BOX2D_NAME === 'vanilla') {
+  if (is_api_1()) {
     var floorFixDef = new b2FixtureDef();
     floorFixDef.shape = new b2PolygonShape();
     floorFixDef.shape.SetAsBox(100, 10);
@@ -128,7 +134,7 @@ function program(_Box2D, _) {
 
   function gameLoop() {
     var loopStart = performance.now();
-    world.Step(1/60, 3, 2);
+    world.Step(1.0/60, 3, 2);
     
     context.fillStyle = '#442222';
     context.fillRect(0, 0, 800, 600);
@@ -138,7 +144,7 @@ function program(_Box2D, _) {
       
       var pos = bodies[i].GetPosition();
       var x, y;
-      if (CURRENT_BOX2D_NAME === 'vanilla') {
+      if (is_api_1()) {
         x = pos.x;
         y = pos.y;
       } else {
