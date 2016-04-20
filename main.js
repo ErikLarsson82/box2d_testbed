@@ -61,7 +61,10 @@ function program(_Box2D, _) {
 
   floorBody.CreateFixture(floorFixDef);
 
+  context.font = "30px Arial";
+
   function gameLoop() {
+    var loopStart = performance.now();
     world.Step(1.0/60 / 3, 4, 4);
     
     context.fillStyle = '#442222';
@@ -74,8 +77,11 @@ function program(_Box2D, _) {
       context.fillRect(pos.x * 45, pos.y * 45, 10, 10);
     }
     var pos = floorBody.GetPosition();
-    context.fillStyle = '#ff0000';
+    context.fillStyle = '#cccccc';
     context.fillRect(pos.x * 45, (pos.y - 10) * 45, 1000, 100);
+
+    context.fillStyle = '#FFFFFF';
+    context.fillText(Math.round((performance.now() - loopStart) * 10) / 10, 700, 100);
 
     window.requestAnimationFrame(gameLoop)
   }
