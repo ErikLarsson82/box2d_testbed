@@ -65,7 +65,7 @@ function program(_Box2D, _) {
 
   function gameLoop() {
     var loopStart = performance.now();
-    world.Step(1.0/60 / 3, 4, 4);
+    world.Step(1.0/60, 4, 4);
     
     context.fillStyle = '#442222';
     context.fillRect(0, 0, 800, 600);
