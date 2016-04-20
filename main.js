@@ -5,6 +5,11 @@ requirejs([
   console.log(e);
 });
 
+/* Stats:
+  - Standard Box2d, PC:     329
+  - Standard Box2d, Device: 4913
+*/
+
 function program(_Box2D, _) {
   console.log('box2d', typeof window.Box2D, typeof window._);
 
@@ -63,6 +68,13 @@ function program(_Box2D, _) {
 
   context.font = "30px Arial";
 
+  var counter = 0;
+  var accumulator = 0;
+
+  function format(input) {
+    return Math.round((input) * 10) / 10;
+  }
+
   function gameLoop() {
     var loopStart = performance.now();
     world.Step(1.0/60, 4, 4);
@@ -81,7 +93,16 @@ function program(_Box2D, _) {
     context.fillRect(pos.x * 45, (pos.y - 10) * 45, 1000, 100);
 
     context.fillStyle = '#FFFFFF';
-    context.fillText(Math.round((performance.now() - loopStart) * 10) / 10, 700, 100);
+    var diff = performance.now() - loopStart;
+    context.fillText(format(diff), 700, 100);
+
+    if (counter === 100) {
+      context.fillStyle = '#FFFFFF';
+      context.fillText(format(accumulator), 700, 200);
+    } else {
+      counter++;
+      accumulator = accumulator + diff;
+    }
 
     window.requestAnimationFrame(gameLoop)
   }
