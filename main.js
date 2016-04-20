@@ -1,5 +1,12 @@
+var versions = {
+  'vanilla': 'Box2D',
+  'kripken': 'Box2D_v2.3.1_min_kripken'
+}
+
+var SELECTED_VERSION = versions['vanilla'];
+
 requirejs([
-  'Box2D',
+  SELECTED_VERSION,
   'underscore'
 ], program, function(e) {
   console.log(e);
